@@ -1,5 +1,5 @@
 const path = require('path');
-const port = 3000; // dev port
+const port = 8080; // dev port
 let styleVariables = require("./src/style/variables.scss.ts");
 const dev = process.env.NODE_ENV === 'development'
 

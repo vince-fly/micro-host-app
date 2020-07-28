@@ -28,5 +28,6 @@ declare module 'vue/types/vue' {
   interface Vue {
     content: any;
     loading: any;
+    authUrl: string;
   }
 }

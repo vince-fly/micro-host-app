@@ -1,14 +1,12 @@
 import Vue from 'vue';
 import { Message } from 'element-ui';
-import { RegistrableApp, LoadableApp } from 'qiankun';
+import { LoadableApp } from 'qiankun';
 import App from './App.vue';
-import npprocess from 'nprogress';
+import { getAuthUrl } from '@/library/js/util';
+Vue.config.productionTip = process.env.NODE_ENV === 'production';
+
 import createRouter from './router';
 import store from './store';
-import { getAppConfigApi } from '@/api/appConfig';
-console.log(location.href);
-Vue.config.productionTip = false;
-const HOSTPATH = '';
 // 导入乾坤函数
 import {
   registerMicroApps, // 注册子应用方法
@@ -35,7 +33,23 @@ import LibraryJs from './library/js';
 import * as childEmit from './util/childEmit';
 // 定义传入子应用的数据
 import pager from './util/pager';
-import nProgress from 'nprogress';
+
+const tokenStr = LibraryJs.getHashValue('token');
+const exp = LibraryJs.getHashValue('exp') || 0;
+let token;
+if (tokenStr) {
+  token = { token: tokenStr, exp };
+} else {
+  token = LibraryJs.getTokenFromCookie();
+}
+const state = {
+  message: '',
+  time: new Date().toString(),
+  from: 'master',
+};
+
+// 在主应用注册官方通信方案
+const actions = initGlobalState(state);
 // 导入应用间通信介质：呼机
 const msg = {
   data: store.getters, // 从主应用仓库读出的数据
@@ -43,31 +57,25 @@ const msg = {
   utils: LibraryJs, // 从主应用读出的工具类库
   emitFnc: childEmit, // 从主应用下发emit函数来收集子应用反馈
   pager, // 从主应用下发应用间通信呼机
-  state: {
-    message: '主应用呼叫子应用',
-    time: new Date().toString(),
-    from: 'host',
-  }, // 便于展示官方通信示例的临时数据
+  actions,
+  state, // 便于展示官方通信示例的临时数据
 };
 
 // 在主应用注册呼机
 pager.subscribe((v: any) => {
   console.log(`监听到子应用${v.from}发来消息：`, v);
-  store.dispatch('app/setToken', v.token);
+  // store.dispatch('app/setToken', v.token);
 });
 
-// 在主应用注册官方通信方案
-const actions = initGlobalState(msg.state);
 // 注册消息监听函数
-actions.onGlobalStateChange((state, prev) =>
-  console.log(`主应用应用监听到来自${state.from}发来消息：`, state, prev)
+actions.onGlobalStateChange((stat, prev) =>
+  console.log(`主应用应用监听到来自${stat.from}发来消息：`, state, prev)
 );
 
 // 主应用渲染函数
 let app: Vue;
 
 function render({ appContent, loading }: any = {}) {
-  console.log(location.href);
   if (!app) {
     app = new Vue({
       el: '#container',
@@ -77,6 +85,7 @@ function render({ appContent, loading }: any = {}) {
         return {
           content: appContent,
           loading,
+          authUrl: '',
         };
       },
       render(h) {
@@ -94,14 +103,62 @@ function render({ appContent, loading }: any = {}) {
   }
 }
 render();
-npprocess.start();
+
+const isDev = process.env.NODE_ENV === 'development';
+function buildApps(): any {
+  const { Apps, Auth } = window.__HBBASE_SETTINGS__;
+  if (!Apps) {
+    return [];
+  }
+
+  const arr: any[] = [];
+  if (!Array.isArray(Apps)) {
+    arr.push({
+      name: Apps.module,
+      entry: isDev ? Apps.devEntry : Apps.depEntry,
+      render,
+      activeRule: genActiveRule(Apps.routerBase),
+      props: {
+        ...msg,
+        ROUTES: Apps.children,
+        systemSettings: Auth,
+        routerBase: Apps.routerBase,
+        moduleSettings: window.__HBBASE_SETTINGS__[Apps.module] || {},
+      },
+    });
+    return { apps: arr, defaultApp: Apps.routerBase };
+  }
+  let defaultApp = '';
+
+  Apps.map(item => {
+    arr.push({
+      name: item.module,
+      entry: isDev ? item.devEntry : item.depEntry,
+      render,
+      activeRule: genActiveRule(item.routerBase),
+      props: {
+        ...msg,
+        ROUTES: item.children,
+        systemSettings: Auth,
+        routerBase: item.routerBase,
+        moduleSettings: window.__HBBASE_SETTINGS__[item.module] || {},
+      },
+    });
+    if (item.defaultRegister) {
+      // defaultApp = `${HOSTPATH}${item.routerBase}`;
+      defaultApp = item.routerBase;
+    }
+  });
+
+  return { apps: arr, defaultApp };
+}
+
 // 获取app注册表
-getAppConfigApi().then(({ data }: any) => {
-  const _res = data || [];
-  console.log(_res);
+// getAppConfigApi().then(({ data }: any) =>
+function registerApps(globalActions: any, currToken: any): void {
+  const data = buildApps();
   // 处理菜单
-  store.dispatch('menu/setUserMenu', _res);
-  if (_res.length === 0) {
+  if (data.apps.length === 0) {
     Message({
       type: 'error',
       message: '没有可以注册的子应用数据',
@@ -109,25 +166,11 @@ getAppConfigApi().then(({ data }: any) => {
     return;
   }
   // 处理子应用注册数据
-  const isDev = process.env.NODE_ENV === 'development';
-  const regApps: RegistrableApp[] = [];
-  let defaultApp = null;
 
-  _res.forEach((item: any) => {
-    regApps.push({
-      name: item.module,
-      entry: isDev ? item.devEntry : item.depEntry,
-      render,
-      activeRule: genActiveRule(`${item.routerBase}`),
-      props: { ...msg, ROUTES: item.children, subPath: HOSTPATH, routerBase: item.routerBase },
-    });
-    if (item.defaultRegister) {
-      // defaultApp = `${HOSTPATH}${item.routerBase}`;
-      defaultApp = item.routerBase;
-    }
-  });
+  let defaultApp = data.defaultApp;
+
   // 注册子应用
-  registerMicroApps(regApps, {
+  registerMicroApps(data.apps, {
     beforeLoad: [
       (capp: LoadableApp) => {
         console.log('before load', capp);
@@ -147,19 +190,35 @@ getAppConfigApi().then(({ data }: any) => {
   });
   // 设置默认子应用
   if (!defaultApp) {
-    defaultApp = _res[0].routerBase;
+    defaultApp = data.apps[0].routerBase;
   }
   setDefaultMountApp(defaultApp);
   // 第一个子应用加载完毕回调
   runAfterFirstMounted(() => {
     console.log('第一个子应用加载完毕');
-    nProgress.done();
+    if (currToken) {
+      // store.dispatch('auth/setToken', currToken);
+      globalActions.setGlobalState(currToken);
+    }
   });
   // 启动微服务
   start({ prefetch: true, sandbox: true });
   // 设置全局未捕获一场处理器
   addGlobalUncaughtErrorHandler(event => {
-    npprocess.done();
     console.log(event);
   });
-});
+}
+
+registerApps(actions, token);
+if (token?.token) {
+  store.dispatch('auth/setToken', token);
+  // 根据用户信息，加载菜单
+} else {
+  const url = getAuthUrl();
+  if (url) {
+    location.href = url;
+  }
+}
+store.dispatch('menu/setUserMenu', window.__HBBASE_SETTINGS__.Apps);
+
+// $DOMAIN_OAUTH_PATH?client_id=$APPLICATION_ID&response_type=token&state=程序生成的36位的数字字符串&redirect_uri=$DOMAIN_NAME + $SITE_PATH? + 网站预定义的回调处理入口

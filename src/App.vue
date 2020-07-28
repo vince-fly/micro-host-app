@@ -29,7 +29,8 @@ export default {
   },
   props: {
     loading: Boolean,
-    content: String
+    content: String,
+    authUrl: String
   }
 };
 </script>
