@@ -50,7 +50,7 @@ module.exports = {
   },
   chainWebpack: config => {
     config.module
-      .rule('thejs')
+      .rule('element-ui-js')
       .test(/\.js$/)
       .include
         .add(path.resolve('src'))

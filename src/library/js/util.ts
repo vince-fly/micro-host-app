@@ -8,6 +8,12 @@ import cookie from './jsCookie';
 // const HOSTPATH = window.__HBHOST_BASE_URL__ || '';
 function routerGo(href: string = '/', title: string, stateObj = {}) {
   // window.history.pushState(stateObj, title, `${HOSTPATH}${href}`);
+
+  if (href.startsWith('#')) {
+    history.pushState(stateObj, title, '/');
+    location.hash = href;
+    return;
+  }
   window.history.pushState(stateObj, title, href);
 }
 

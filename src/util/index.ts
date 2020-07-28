@@ -4,7 +4,10 @@
  */
 
 function genActiveRule(routerPrefix: string) {
-  return (location: any) => location.pathname.startsWith(routerPrefix);
+  if (routerPrefix.indexOf('#') === 0) {
+    return (location: Location) => location.hash.startsWith(routerPrefix);
+  }
+  return (location: Location) => location.pathname.startsWith(routerPrefix) || routerPrefix.startsWith(location.path);
 }
 
 export {
