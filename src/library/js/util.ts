@@ -1,3 +1,4 @@
+import { IToken } from '@/types/IToken';
 /**
  * 跨应用路由跳转
  * @param {String} href url地址
@@ -7,7 +8,7 @@
 // const HOSTPATH = window.__HBHOST_BASE_URL__ || '';
 function routerGo(href: string = '/', title: string, stateObj = {}) {
   // window.history.pushState(stateObj, title, `${HOSTPATH}${href}`);
-  const { SITE_PATH } = window.__HBBASE_SETTINGS__.Auth;
+  const { SITE_PATH } = window.__HBBASE_SETTINGS__.host;
   if (href.startsWith('#')) {
     history.pushState(stateObj, title, SITE_PATH ? SITE_PATH : '/');
     location.hash = href;
@@ -21,6 +22,15 @@ function getHashValue(key: string): string | null {
   return matches ? matches[1] : null ;
 }
 
+function getToken(): IToken | undefined {
+  const token = getHashValue('token');
+  const exp = parseInt(getHashValue('exp') || '0', 10);
+  if (token) {
+    return { token, exp };
+  }
+  return getTokenFromCookie();
+}
+
 function getTokenFromCookie() {
   // cookie.getItem('')
   let arr;
@@ -29,7 +39,7 @@ function getTokenFromCookie() {
   if (arr && arr[2].trim().length > 0) {
     return { token: decodeURIComponent(arr[2]), exp: 0 };
   } else {
-    return null ;
+    return undefined;
   }
 }
 
@@ -47,6 +57,6 @@ function getAuthUrl(): string {
 export {
   routerGo, // 跨应用路由跳转
   getHashValue,
-  getTokenFromCookie,
+  getToken,
   getAuthUrl,
 };

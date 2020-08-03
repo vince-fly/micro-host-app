@@ -1,20 +1,23 @@
 import Axios from 'axios';
-import { Message/* , MessageBox  */} from 'element-ui';
-import { localGet/* , localDel, sessionDel, sessionGet, sessionSet */ } from '@/library/js/storage'; // 导入存储函数
+import { Message /* , MessageBox  */ } from 'element-ui';
+import {
+  localGet /* , localDel, sessionDel, sessionGet, sessionSet */,
+} from '@/library/js/storage'; // 导入存储函数
+import { getToken } from '@/library/js/util';
 // import router, { resetRouter } from "@/router"
 // import store from "@/store";
 // sessionDel("t-o"); // 清除timeout
-
+const { host } = window.__HBBASE_SETTINGS__;
 // 定义axios配置
 const http = Axios.create({
-  baseURL: '', // api的base_url
-  withCredentials: true, // 开启跨域身份凭证
+  baseURL: host.API_HOST, // api的base_url
+  // withCredentials: true, // 开启跨域身份凭证
   method: 'post',
   headers: {
-    'Content-Type': 'application/json;charset=UTF-8'
+    'Content-Type': 'application/json;charset=UTF-8',
   },
-  timeout: 5000, // request timeout
-  retry: 2
+  timeout: 10000, // request timeout
+  retry: 2,
 });
 
 // 设置全局的请求次数，请求的间隙，用于自动再次请求
@@ -23,29 +26,29 @@ http.defaults.retryDelay = 1000;
 
 // 请求拦截器
 http.interceptors.request.use(
-  function(config) {
-    const token = localGet('token');
-    if (token) { config.headers.Authorization = token; }
+  (config) => {
+    // const token = getToken();
+    // if (token) { config.headers.Authorization = token.token; }
     return config;
   },
-  function(error) {
+  (error) => {
     return Promise.reject(error);
   }
 );
 
 // 响应拦截器
 http.interceptors.response.use(
-  function(res) {
+  (res) => {
     if (res.data.code === 300) {
       Message({
         showClose: true,
         message: res.data.message || '操作失败',
-        type: 'error'
+        type: 'error',
       });
     }
     return res;
   },
-  function(err) {
+  (err) => {
     const config = err.config;
     const errres = err.response;
     const errType = errres ? errres.status : 0;
@@ -109,7 +112,9 @@ http.interceptors.response.use(
     }
 
     // If config does not exist or the retry option is not set, reject
-    if (!config || !config.retry) { return Promise.reject(err); }
+    if (!config || !config.retry) {
+      return Promise.reject(err);
+    }
 
     // Set the variable for keeping track of the retry count
     config.__retryCount = config.__retryCount || 0;
@@ -150,14 +155,14 @@ http.interceptors.response.use(
     config.__retryCount += 1;
 
     // Create new promise to handle exponential backoff
-    const backoff = new Promise(function(resolve) {
-      setTimeout(function() {
+    const backoff = new Promise((resolve) => {
+      setTimeout(() => {
         resolve();
       }, config.retryDelay || 1);
     });
 
     // Return the promise in which recalls axios to retry the request
-    return backoff.then(function() {
+    return backoff.then(() => {
       return http(config);
     });
   }

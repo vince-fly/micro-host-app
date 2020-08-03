@@ -1,6 +1,6 @@
-import pager from '../../util/pager';
-import { getTokenFromCookie } from '../../library/js/util';
-const initToken = getTokenFromCookie();
+import pager from '../../utils/pager';
+import { getToken } from '../../library/js/util';
+const initToken = getToken();
 
 export interface IToken {
   token: string | undefined;
@@ -11,7 +11,7 @@ export default {
   namespaced: true,
   state: {
     token: initToken?.token || undefined,
-    exp: initToken?.exp || 0
+    exp: initToken?.exp || 0,
   },
 
   mutations: {
@@ -23,25 +23,37 @@ export default {
       // state = {token: undefined, exp: 0};
       state.token = undefined;
       state.exp = 0;
-    }
+    },
   },
 
   actions: {
-    setToken({commit}: any, data: IToken) {
-      const cn: string = `HBTOKEN=${encodeURIComponent(data.token!)};expires=${new Date().getTime() + data.exp}`;
+    setToken({ commit }: any, data: IToken) {
+      const cn: string = `HBTOKEN=${encodeURIComponent(
+        data.token!
+      )};expires=${new Date().getTime() + data.exp}`;
       document.cookie = cn;
       commit('SAVE_TOKEN', data);
-      pager.next({data, from: 'master'});
+      pager.next({
+        data: { type: 'auth', cmd: 'sign', message: data },
+        from: 'master',
+      });
     },
-    logout({commit}: any) {
+    logout({ commit }: any) {
       // remove token
-      const token = getTokenFromCookie();
+      const token = getToken();
       if (token && token.token) {
         const cn = `HBTOKEN=;expires=${new Date().getTime() - 1000}`;
         document.cookie = cn;
       }
       commit('CLEAN_TOKEN');
-      pager.next({data: {token: undefined, exp: 0}, from: 'master'})
-    }
-  }
-}
+      pager.next({
+        data: {
+          type: 'auth',
+          cmd: 'logout',
+          message: { token: undefined, exp: 0 },
+        },
+        from: 'master',
+      });
+    },
+  },
+};

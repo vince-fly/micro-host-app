@@ -3,6 +3,7 @@ import { Message } from 'element-ui';
 import { LoadableApp } from 'qiankun';
 import App from './App.vue';
 import { getAuthUrl } from '@/library/js/util';
+import { filter } from 'rxjs/operators';
 Vue.config.productionTip = process.env.NODE_ENV === 'production';
 
 import createRouter from './router';
@@ -21,7 +22,7 @@ import './plugin/element';
 // 导入封装后的ui组件
 import './library/ui/install';
 // 导入路由监听函数
-import { genActiveRule } from './util';
+import { genActiveRule } from './utils';
 /**
  * 主应用公共资源下发子应用
  */
@@ -30,9 +31,9 @@ import LibraryUi from './library/ui/';
 // 导入主应用工具类库
 import LibraryJs from './library/js';
 // 导入主应用需要下发的emit函数
-import * as childEmit from './util/childEmit';
+import * as childEmit from './utils/childEmit';
 // 定义传入子应用的数据
-import pager from './util/pager';
+import pager from './utils/pager';
 
 const tokenStr = LibraryJs.getHashValue('token');
 const exp = LibraryJs.getHashValue('exp') || 0;
@@ -40,7 +41,7 @@ let token;
 if (tokenStr) {
   token = { token: tokenStr, exp };
 } else {
-  token = LibraryJs.getTokenFromCookie();
+  token = LibraryJs.getToken();
 }
 const state = {
   message: '',
@@ -66,7 +67,17 @@ pager.subscribe((v: any) => {
   console.log(`监听到子应用${v.from}发来消息：`, v);
   // store.dispatch('app/setToken', v.token);
 });
-
+pager
+  .pipe(filter((subMsg: any) => subMsg.data.type === 'auth'))
+  .subscribe(({ data }) => {
+    // 用户信息过期
+    console.log(data);
+    const url = getAuthUrl();
+    console.log(url);
+    if (url) {
+      // location.href = url;
+    }
+  });
 // 注册消息监听函数
 actions.onGlobalStateChange((stat, prev) =>
   console.log(`主应用应用监听到来自${stat.from}发来消息：`, state, prev)
@@ -164,7 +175,7 @@ function registerApps(globalActions: any, currToken: any): void {
       type: 'error',
       message: '没有可以注册的子应用数据',
     });
-    return;
+    return ;
   }
   // 处理子应用注册数据
 
@@ -222,6 +233,7 @@ if (token?.token) {
     location.href = url;
   }
 }
+store.dispatch('menu/fetchMenus', '126');
 store.dispatch('menu/setUserMenu', window.__HBBASE_SETTINGS__.Apps);
 
 // $DOMAIN_OAUTH_PATH?client_id=$APPLICATION_ID&response_type=token&state=程序生成的36位的数字字符串&redirect_uri=$DOMAIN_NAME + $SITE_PATH? + 网站预定义的回调处理入口

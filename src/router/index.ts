@@ -1,10 +1,11 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
+import { IMenuItem } from '@/types/IMenu';
 // import Home from '../views/Home.vue';
 
 Vue.use(VueRouter);
 
-const routes = [
+export const routes: IMenuItem[] = [
   // {
   //   path: '/',
   //   name: 'home',
@@ -30,11 +31,12 @@ const routes = [
   // },
 ];
 
-const createRouter = (baseUrl: string) => new VueRouter({
-  mode: 'history',
-  base: baseUrl,
-  routes: []
-});
+const createRouter = (baseUrl: string) =>
+  new VueRouter({
+    mode: 'history',
+    base: baseUrl,
+    routes: [],
+  });
 
 // const router = createRouter();
 

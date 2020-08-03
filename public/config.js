@@ -42,7 +42,7 @@
         icon: 'el-icon-menu',
         module: 'hb-m3',
         defaultRegister: false,
-        devEntry: '//localhost/hb3/',
+        devEntry: '//localhost:3003',
         depEntry: '//localhost/hb3/',
         routerBase: '#/hb3',
         children: [
@@ -69,6 +69,10 @@
     },
     hb2: {
       API_HOST: 'https://api.hb56saas.com',
+    },
+    host: {
+      API_HOST: 'http://172.16.19.222:8080/api',
+      SITE_PATH: '',
     },
   };
 
