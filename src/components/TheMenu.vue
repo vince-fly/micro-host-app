@@ -22,7 +22,7 @@
         <span class="menu-item-title">{{ item.title }}</span>
       </el-menu-item>
     </el-submenu>
-    <el-submenu key="user_login">
+    <el-submenu key="user_login" index="user_login_idx">
       <template slot="title">
         <i class="menu-icon el-icon-user-solid"></i>
         <span class="menu-sub-title">个人用户</span>

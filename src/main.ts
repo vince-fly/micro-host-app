@@ -123,6 +123,7 @@ function buildApps(): any {
         ROUTES: Apps.children,
         systemSettings: Auth,
         routerBase: Apps.routerBase,
+        hostPath: location.pathname,
         moduleSettings: window.__HBBASE_SETTINGS__[Apps.module] || {},
       },
     });
@@ -130,7 +131,7 @@ function buildApps(): any {
   }
   let defaultApp = '';
 
-  Apps.map(item => {
+  Apps.map((item) => {
     arr.push({
       name: item.module,
       entry: isDev ? item.devEntry : item.depEntry,
@@ -177,12 +178,14 @@ function registerApps(globalActions: any, currToken: any): void {
         return Promise.resolve(true);
       },
     ],
-    beforeMount: [capp => {
+    beforeMount: [
+      (capp) => {
         console.log('before mount', capp);
         return Promise.resolve(true);
       },
     ],
-    afterUnmount: [capp => {
+    afterUnmount: [
+      (capp) => {
         console.log('after unload', capp);
         return Promise.resolve(true);
       },
@@ -204,7 +207,7 @@ function registerApps(globalActions: any, currToken: any): void {
   // 启动微服务
   start({ prefetch: true, sandbox: true });
   // 设置全局未捕获一场处理器
-  addGlobalUncaughtErrorHandler(event => {
+  addGlobalUncaughtErrorHandler((event) => {
     console.log(event);
   });
 }

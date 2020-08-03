@@ -1,12 +1,7 @@
 <template>
   <div id="root" class="main-container">
-    <!-- 左侧菜单区 -->
-    <the-menu class="main-menu-box" />
     <!-- 右侧视图 -->
     <div class="main-container-content">
-      <!-- 上部导航区 -->
-      <the-nav />
-      <!-- 子应用渲染区 -->
       <div class="main-container-view">
         <el-scrollbar class="wl-scroll">
           <div id="sub-app-layout" class="app-view-box" v-html="content"></div>
