@@ -42,7 +42,7 @@
         icon: 'el-icon-menu',
         module: 'hb-m3',
         defaultRegister: false,
-        devEntry: '//localhost:3003',
+        devEntry: '//localhost/hb3/',
         depEntry: '//localhost/hb3/',
         routerBase: '#/hb3',
         children: [

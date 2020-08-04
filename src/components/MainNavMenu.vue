@@ -1,41 +1,6 @@
 <template>
   <div class="main-nav-menu-wrap" :class="menuShow? 'main-nav-show': 'main-nav-autohide'">
-    <el-menu
-      class="main-nav-menu"
-      :text-color="themeMenu.text"
-      :default-openeds="menuDefaultOpeneds"
-      :background-color="themeMenu.background"
-      :active-text-color="themeMenu.active_text"
-      mode="horizontal"
-    >
-      <el-submenu v-for="sub of menu" :key="sub.id" :index="sub.id">
-        <template slot="title">
-          <i class="menu-icon" :class="sub.icon"></i>
-          <span class="menu-sub-title">{{ sub.title }}</span>
-        </template>
-        <el-menu-item
-          v-for="item of sub.children"
-          :key="item.id"
-          :index="item.id"
-          @click="goto(sub.module, item.url)"
-        >
-          <span class="menu-item-title">{{ item.title }}</span>
-        </el-menu-item>
-      </el-submenu>
-      <el-submenu key="user_login" index="user_login_main">
-        <template slot="title">
-          <i class="menu-icon el-icon-user-solid"></i>
-          <span class="menu-sub-title">个人用户</span>
-        </template>
-        <el-menu-item @click="authClick()" key="user_login" index="user_10001">
-          <span v-if="auth.token" class="menu-item-title">切换用户</span>
-          <span v-else class="menu-item-title">登录</span>
-        </el-menu-item>
-        <el-menu-item key="user_logout" v-if="auth.token" @click="logout()" index="user_10002">
-          <span class="menu-item-title">退出</span>
-        </el-menu-item>
-      </el-submenu>
-    </el-menu>
+    <navbar />
     <span class="lock-icon" @click="lockClick()">
       <i class="menu-icon" :class="locked? 'el-icon-lock': 'el-icon-unlock'"></i>
     </span>
@@ -47,13 +12,14 @@ import Vue from 'vue';
 import { mapGetters } from 'vuex'; // 引入状态共享
 import { MessageBox } from 'element-ui';
 import { routerGo, getAuthUrl } from '../library/js/util'; // 引入跨应用路由跳转
-
+import Navbar from './Navbar';
 import scssVars from '../style/variablesScss';
 import store from '../store';
 
 const { menu_background, menu_color, menu_active_color } = scssVars;
 export default Vue.extend({
   name: 'MainNavMenu',
+  components: { Navbar },
   props: {
     model: {
       type: String,

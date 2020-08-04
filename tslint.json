@@ -69,6 +69,13 @@
       "ignore-same-line"
     ],
     "forin": true,
-    "no-debugger": true
+    "no-debugger": false,
+    "whitespace": [
+      true,
+      "check-branch",
+      "check-decl",
+      "check-separator",
+      "check-type"
+    ]
   }
 }

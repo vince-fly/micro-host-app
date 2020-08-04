@@ -4,6 +4,7 @@ import { LoadableApp } from 'qiankun';
 import App from './App.vue';
 import { getAuthUrl } from '@/library/js/util';
 import { filter } from 'rxjs/operators';
+import './icons';
 Vue.config.productionTip = process.env.NODE_ENV === 'production';
 
 import createRouter from './router';
@@ -175,7 +176,7 @@ function registerApps(globalActions: any, currToken: any): void {
       type: 'error',
       message: '没有可以注册的子应用数据',
     });
-    return ;
+    return;
   }
   // 处理子应用注册数据
 
