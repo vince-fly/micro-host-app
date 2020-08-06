@@ -98,9 +98,8 @@ export default class extends Vue {
 
   @Watch('defaultTheme', {immediate: true})
   private async onDefaultThemeChange(val: string) {
-    console.log(val);
-    this._theme = val;
-    const oldVal = this._chalk? this._theme : ORIGINAL_THEME;
+    this.theme = val;
+    const oldVal = this._chalk? this.theme : ORIGINAL_THEME;
     // if (typeof val === 'string') {
     //   return;
     // }
@@ -134,8 +133,16 @@ export default class extends Vue {
       }
 
     if (!this.chalk) {
-        const url = `https://unpkg.com/element-ui@${version}/lib/theme-chalk/index.css`
-        await this.getCSSString(url, 'chalk')
+        const url = `https://unpkg.com/element-ui@${version}/lib/theme-chalk/index.css`;
+        try{
+          await this.getCSSString(url, 'chalk');
+        } catch {
+
+        } finally {
+          $message.close();
+          // this.$message.close();
+        }
+
       }
 
     const chalkHandler = getHandler('chalk', 'chalk-style')

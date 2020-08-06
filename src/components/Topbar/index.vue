@@ -3,7 +3,7 @@
     <el-menu
       :default-active="activeMenu"
       :text-color="variables.menuText"
-      :unique-opened="false"
+      :unique-opened="true"
       :active-text-color="variables.menuActiveText"
       :collapse-transition="false"
       mode="horizontal"
@@ -48,9 +48,9 @@ export default class extends Vue {
   get isCollapse() {
     return !this.sidebar.opened;
   }
-  @Getter('sidebar') public sidebar: any;
+  @Getter('sidebar') private sidebar: any;
 
-  @Getter('permission_routes') permission_routes: any;
+  @Getter('permission_routes') private permission_routes: any;
   // private permission_routes = [
 
   // ];

@@ -2,10 +2,15 @@ import Vue from 'vue';
 import { Message } from 'element-ui';
 import { LoadableApp } from 'qiankun';
 import App from './App.vue';
-import { getAuthUrl } from '@/library/js/util';
+import { getAuthUrl, routerGo } from '@/library/js/util';
 import { filter } from 'rxjs/operators';
+
+import '@/style/index.scss';
+
+import '@/style/element-variables.scss';
 import './icons';
 Vue.config.productionTip = process.env.NODE_ENV === 'production';
+Vue.prototype.$routerGo = routerGo;
 
 import createRouter from './router';
 import store from './store';

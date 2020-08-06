@@ -29,5 +29,6 @@ declare module 'vue/types/vue' {
     content: any;
     loading: any;
     authUrl: string;
+    $routerGo: (href: string, title: string, stateObj: any) => void;
   }
 }

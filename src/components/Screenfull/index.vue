@@ -1,6 +1,6 @@
 <template>
   <div>
-    <svg-icon :icon-class="isFullscreen?'exit-fullscreen':'fullscreen'" @click="click" />
+    <svg-icon :icon-class="isFullscreen ? 'fullscreen' : 'fullscreen'" @click="click" />
   </div>
 </template>
 
@@ -11,11 +11,11 @@ import * as screen from 'screenfull';
 @Component({name: 'Screenfull'})
 export default class extends Vue {
 
-  private isFullscreen: boolean = true;
+  private isFullscreen: boolean = false;
 
 
   public mounted() {
-    this.init()
+    this.init();
   }
   public beforeDestroy() {
     this.destroy()

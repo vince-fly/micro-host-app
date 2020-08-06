@@ -6,15 +6,15 @@ import { IToken } from '@/types/IToken';
  * @param {String} title 标题 暂时没有用
  */
 // const HOSTPATH = window.__HBHOST_BASE_URL__ || '';
-function routerGo(href: string = '/', title: string, stateObj = {}) {
+function routerGo(href: string = '/', title?: string, stateObj = {}): void {
   // window.history.pushState(stateObj, title, `${HOSTPATH}${href}`);
   const { SITE_PATH } = window.__HBBASE_SETTINGS__.host;
   if (href.startsWith('#')) {
-    history.pushState(stateObj, title, SITE_PATH ? SITE_PATH : '/');
+    history.pushState(stateObj, title || '', SITE_PATH ? SITE_PATH : '/');
     location.hash = href;
-    return ;
+    return;
   }
-  window.history.pushState(stateObj, title, href);
+  window.history.pushState(stateObj, title || '', href);
 }
 
 function getHashValue(key: string): string | null {

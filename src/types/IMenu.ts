@@ -5,11 +5,12 @@ export interface IMenuMeta {
   icon: string;
   roles: string[];
   noCache?: boolean;
+  affix?: string;
 }
 
 export interface ITopMenu {
   path: string;
-  component: string | any;
+  component?: string | any;
   children?: IMenuItem[];
   redirect?: string;
   meta?: IMenuMeta;
@@ -17,6 +18,7 @@ export interface ITopMenu {
 
 export interface IMenuItem extends ITopMenu {
   name?: string;
+  fullPath?: string;
 }
 
 export interface IRawMenu {
@@ -34,5 +36,4 @@ export interface IRawMenu {
   smu_hasseparator: string | null;
   smu_ismultiform: string | null;
   smu_disabledisplay: string | null;
-
 }

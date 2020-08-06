@@ -1,20 +1,21 @@
 <template>
   <span>
-    <i v-if="icon.includes('el-icon')" :class="icon ? 'sub-el-icon' : ''" />
+    <i v-if="icon.includes('el-icon')" :class="icon ? icon : 'el-icon-s-tools'" />
     <svg-icon v-else icon-class="icon" />
     <span v-if="title" slot="title">{{title}}</span>
   </span>
 </template>
-<script lang="tsx">
+<script lang="ts">
 import { Component, Vue, Mixins, Prop } from 'vue-property-decorator';
 
 @Component({name: 'MenuItem'})
 export default class extends Vue {
 
   // functional: true,
-  @Prop({default:''}) public icon!: string;
+  @Prop({default: ''}) public icon!: string;
 
   @Prop({default: ''}) public title!: string;
+
 }
 </script>
 

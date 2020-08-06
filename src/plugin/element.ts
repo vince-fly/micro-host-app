@@ -5,12 +5,13 @@ import {
   Submenu,
   MenuItem,
   MenuItemGroup,
-  MessageBox,
   Message,
   ColorPicker,
   Dropdown,
   DropdownItem,
   DropdownMenu,
+  Tag,
+  MessageBox,
 } from 'element-ui';
 import Scrollbar from 'element-ui/packages/scrollbar';
 Vue.use(Menu);
@@ -23,4 +24,7 @@ Vue.use(ColorPicker);
 Vue.use(Dropdown);
 Vue.use(DropdownItem);
 Vue.use(DropdownMenu);
+Vue.use(Tag);
+// Vue.use(Alert);
 Vue.prototype.$message = Message;
+Vue.prototype.$alert = MessageBox.alert;

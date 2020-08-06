@@ -31,11 +31,11 @@
 
     <div class="right-menu">
       <template v-if="device !== 'mobile'">
-        <theme-picker
+        <!-- <theme-picker
           class="right-menu-item hover-effect"
           style="float: right;height: 50px;top:22%;"
           @change="themeChange"
-        />
+        />-->
 
         <screenfull id="screenfull" class="right-menu-item hover-effect" />
 
@@ -104,8 +104,8 @@ export default class extends Vue {
 
   private avatar: string = '';
 
-  @Getter('sidebar') sidebar!: ISidebar ;
-  @Getter('device') device!: string;
+  @Getter('sidebar') public sidebar!: ISidebar ;
+  @Getter('device') public device!: string;
   // @Getter('avatar') avatar!:
   // computed: {
   //   ...mapGetters(['sidebar', 'avatar', 'device'])
@@ -143,16 +143,16 @@ export default class extends Vue {
   //   window.removeEventListener('resize', this.throttledCheckScroll)
   //   window.removeEventListener('load', this.checkScroll)
   // }
-};
+}
 </script>
 
 <style lang="scss" scoped>
 .navbar {
   height: 50px;
   overflow: hidden;
-  position: relative;
+  /* position: relative; */
   width: 100%;
-  /* display: flex; */
+  display: flex;
   background: #fff;
   box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
   .hamburger-container {
@@ -168,8 +168,9 @@ export default class extends Vue {
   }
   .left-menu {
     height: 100%;
-    width: 400px;
-    position: absolute;
+    width: 230px;
+    /* position: absolute; */
+    flex: 0 0 230px;
     left: 0;
     top: 0;
     .ig {
@@ -201,7 +202,8 @@ export default class extends Vue {
     }
   }
   .center {
-    margin: 0 230px 0 400px;
+    /* margin: 0 230px 0 400px; */
+    flex: 1 1 auto;
     overflow: hidden;
     position: relative;
     /* padding: 0 20px; */
@@ -242,9 +244,10 @@ export default class extends Vue {
   }
 
   .right-menu {
-    position: absolute;
-    top: 0;
-    right: 0;
+    /* position: absolute; */
+    flex: 0 0 230px;
+    /* top: 0; */
+    /* right: 0; */
     width: 230px;
     display: flex;
     justify-content: flex-end;

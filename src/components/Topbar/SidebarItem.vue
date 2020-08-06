@@ -33,7 +33,7 @@
 </template>
 
 <script lang="ts">
-// import {path} from 'path';
+import path from 'path';
 import { isExternal } from '../../utils/validate';
 import Item from './Item.vue';
 import AppLink from './Link.vue';
@@ -81,8 +81,8 @@ export default class extends FixiOSBug {
       if (isExternal(this.basePath)) {
         return this.basePath
       }
-      return '';
-      // return path.resolve(this.basePath, routePath)
+      // return '';
+      return path.resolve(this.basePath, routePath)
     }
 
 }
